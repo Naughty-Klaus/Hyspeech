@@ -1,0 +1,18 @@
+{
+  "Type": "Dialog4",
+  "Entries": [
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S04.content.0"
+    },
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S04.content.1"
+    },
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S04.content.2"
+    },
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S04.content.3"
+    }
+  ],
+  "Next": ""
+}

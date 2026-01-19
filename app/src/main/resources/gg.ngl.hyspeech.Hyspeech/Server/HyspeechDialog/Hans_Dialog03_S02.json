@@ -1,0 +1,12 @@
+{
+  "Type": "Dialog2",
+  "Entries": [
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S02.content.0"
+    },
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog03_S02.content.1"
+    }
+  ],
+  "Next": ""
+}

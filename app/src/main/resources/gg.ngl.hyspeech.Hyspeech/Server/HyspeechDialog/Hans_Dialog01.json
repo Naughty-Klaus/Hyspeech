@@ -1,0 +1,10 @@
+{
+  "Type": "Dialog1",
+  "Entries": [
+    {
+      "Content": "hyspeech.dialog.Hans_Dialog01.content.0",
+      "Next": "Hans_Dialog02"
+    }
+  ],
+  "Next": "Hans_Dialog02"
+}

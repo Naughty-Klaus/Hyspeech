@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hytale
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.hytale-downloader-credentials.json
+
+# Setup
+.bin/
+server/
+src-ref/
+
+# Misc
+docs/
+.cache/
+gg.ngl.hyspeech.Hyspeech/
+imports/
+logs/
+universe/

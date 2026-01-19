@@ -1,26 +1,35 @@
 package gg.ngl.hyspeech.dialog;
 
-import com.hypixel.hytale.builtin.adventure.shop.barter.BarterItemStack;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
-import gg.ngl.hyspeech.dialog.HyspeechDialogEntryType.DialogEntryType;
-import java.util.Arrays;
 import javax.annotation.Nonnull;
+
+/**
+ *
+ *     Hyspeech - Character dialog system for Hytale
+ *     Copyright (C) 2026 Naughty-Klaus
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
 
 public class HyspeechDialogEntry {
     public static final BuilderCodec<HyspeechDialogEntry> CODEC =
             BuilderCodec
                     .builder(HyspeechDialogEntry.class, HyspeechDialogEntry::new)
-                    /*.append(
-                            new KeyedCodec<>("Type", HyspeechDialogEntryType.DIALOG_ENTRY_TYPE_ENUM_CODEC),
-                            (obj, val) -> obj.type = val,
-                            obj -> obj.type
-                    )
-                    .addValidator(Validators.nonNull())
-                    .add()*/
                     .append(
                             new KeyedCodec<>("Content", Codec.STRING),
                             (obj, val) -> obj.content = val,
@@ -36,22 +45,16 @@ public class HyspeechDialogEntry {
                     .add()
                     .build();
 
-    //public DialogEntryType type;
     public String content;
     public String next;
 
-    public HyspeechDialogEntry(/*DialogEntryType type,*/ String content, String next) {
-        //this.type = type;
+    public HyspeechDialogEntry(String content, String next) {
         this.content = content;
         this.next = next;
     }
 
     protected HyspeechDialogEntry() {
     }
-
-    /*public DialogEntryType getType() {
-        return this.type;
-    }*/
 
     public String getContent() {
         return this.content;
@@ -63,6 +66,6 @@ public class HyspeechDialogEntry {
 
     @Nonnull
     public String toString() {
-        return "HyspeechDialogEntry{" + /*type=" + this.type + ", */ "next=" + this.next + ", content=" + this.content + "}";
+        return "HyspeechDialogEntry{next=" + this.next + ", content=" + this.content + "}";
     }
 }

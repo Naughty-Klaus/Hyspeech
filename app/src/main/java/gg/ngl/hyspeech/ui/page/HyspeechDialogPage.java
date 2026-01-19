@@ -17,6 +17,7 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+
 import gg.ngl.hyspeech.Hyspeech;
 import gg.ngl.hyspeech.dialog.HyspeechDialogAsset;
 
@@ -25,6 +26,26 @@ import static gg.ngl.hyspeech.ui.page.HyspeechDialogPage.PageData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.logging.Level;
+
+/**
+ *
+ *     Hyspeech - Character dialog system for Hytale
+ *     Copyright (C) 2026 Naughty-Klaus
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
 
 public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
 
@@ -35,41 +56,8 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         this.key = key;
     }
 
-    /*@Override
-    public void build(UICommandBuilder commands) {
-        commands.append("Pages/HyspeechDialog.ui");
-
-        AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> store =
-                AssetRegistry.getAssetStore(HyspeechDialogAsset.class);
-
-        if(store == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("Store is null!");
-            return;
-        }
-
-        DefaultAssetMap<String, HyspeechDialogAsset> assetMap = store.getAssetMap();
-
-        if(assetMap == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("assetMap is null!");
-            return;
-        }
-
-        HyspeechDialogAsset asset = assetMap.getAsset(key);
-
-        if(asset == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("asset is null!");
-            return;
-        }
-
-        //commands.set("#Title.Text", Message.translation("hyspeech.dialog." + asset.getId() + ".name"));
-        //commands.set("#Content.Text", Message.translation(asset.content).param("username", playerRef.getUsername()));
-    }*/
-
     @Override
     public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commands, @Nonnull UIEventBuilder eventBuilder, @Nonnull Store<EntityStore> store) {
-        //AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore
-                //= HyspeechDialogAsset.getAssetStore();
-
         AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore =
             AssetRegistry.getAssetStore(HyspeechDialogAsset.class);
 

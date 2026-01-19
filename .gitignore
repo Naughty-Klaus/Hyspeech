@@ -29,7 +29,7 @@ src-ref/
 # Misc
 docs/
 .cache/
-gg.ngl.hyspeech.Hyspeech/
+./gg.ngl.hyspeech.Hyspeech/
 imports/
 logs/
 universe/

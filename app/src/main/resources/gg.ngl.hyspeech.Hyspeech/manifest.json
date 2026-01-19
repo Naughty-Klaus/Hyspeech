@@ -1,0 +1,20 @@
+{
+  "Group": "gg.ngl.hyspeech",
+  "Name": "Hyspeech",
+  "Version": "1.0.0",
+  "Description": "UI elements for Hyspeech",
+  "Authors": [
+    {
+      "Name": "Arrav",
+      "Email": "",
+      "Url": ""
+    }
+  ],
+  "Website": "hy.ngl.gg",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "LoadBefore": {},
+  "DisabledByDefault": false,
+  "IncludesAssetPack": true,
+  "SubPlugins": []
+}

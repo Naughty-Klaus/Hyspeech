@@ -49,39 +49,19 @@ import java.util.logging.Level;
 
 public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
 
-    public String key;
-
     public HyspeechDialogPage(PlayerRef playerRef, String key) {
         super(playerRef, CustomPageLifetime.CanDismissOrCloseThroughInteraction, PageData.CODEC);
-        this.key = key;
+        setKey(key);
     }
 
     @Override
     public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commands, @Nonnull UIEventBuilder eventBuilder, @Nonnull Store<EntityStore> store) {
-        AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore =
-            AssetRegistry.getAssetStore(HyspeechDialogAsset.class);
-
-        if(hyspeechDialogStore == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("Store is null!");
-            return;
-        }
-
-        DefaultAssetMap<String, HyspeechDialogAsset> assetMap = hyspeechDialogStore.getAssetMap();
-
-        if(assetMap == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("assetMap is null!");
-            return;
-        }
-
-        HyspeechDialogAsset asset = assetMap.getAsset(key);
+        HyspeechDialogAsset asset = getAsset();
 
         if(asset == null) {
             this.close();
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("asset is null!");
             return;
         }
-
-        System.out.println(asset.getId());
 
         switch (asset.getType()) {
             case CHOICE_2:
@@ -94,6 +74,11 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 break;
             case CHOICE_3:
                 currentDialogType = DialogType.CHOICE_3;
+                commands.append("Pages/HyspeechChoice3.ui");
+
+                for(int i = 0; i <= 2; i++) {
+                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                }
                 break;
             case CHOICE_4:
                 currentDialogType = DialogType.CHOICE_4;
@@ -160,60 +145,45 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
     public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull PageData data) {
         boolean needsUpdate = false;
 
-        AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore
-                = HyspeechDialogAsset.getAssetStore();
-
-        if(hyspeechDialogStore == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("Store is null!");
-            return;
-        }
-
-        DefaultAssetMap<String, HyspeechDialogAsset> assetMap = hyspeechDialogStore.getAssetMap();
-
-        if(assetMap == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("assetMap is null!");
-            return;
-        }
-
-        HyspeechDialogAsset asset = assetMap.getAsset(key);
+        HyspeechDialogAsset asset = getAsset();
 
         if(asset == null) {
-            Hyspeech.get().getLogger().at(Level.SEVERE).log("asset is null!");
+            this.close();
             return;
         }
 
         if(!this.isProcessing) {
             if (data.doNext != null && data.doNext) {
                 isProcessing = true;
-                this.key = asset.getNext();
+                setKey(asset.getNext());
             }
 
             if (data.doEntry0 != null && data.doEntry0) {
                 isProcessing = true;
 
                 if(asset.entries.length > 0)
-                    this.key = asset.getEntries()[0].getNext();
+                    setKey(asset.getEntries()[0].getNext());
             }
 
             if (data.doEntry1 != null && data.doEntry1) {
                 isProcessing = true;
 
                 if(asset.entries.length > 1)
-                    this.key = asset.getEntries()[1].getNext();
+                    setKey(asset.getEntries()[1].getNext());
             }
 
             if (data.doEntry2 != null && data.doEntry2) {
                 isProcessing = true;
 
                 if(asset.entries.length > 2)
-                    this.key = asset.getEntries()[2].getNext();
+                    setKey(asset.getEntries()[2].getNext());
             }
 
             if (data.doEntry3 != null && data.doEntry3) {
                 isProcessing = true;
 
                 if(asset.entries.length > 3)
-                    this.key = asset.getEntries()[3].getNext();
+                    setKey(asset.getEntries()[3].getNext());
             }
 
             if(isProcessing) {
@@ -224,7 +194,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
 
         if (data.doNext != null && data.doNext && !this.isProcessing) {
             isProcessing = true;
-            this.key = asset.getNext();
+            setKey(asset.getNext());
 
             this.rebuild();
             return;
@@ -235,6 +205,22 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         }
     }
 
+    public HyspeechDialogAsset getAsset() {
+        AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore =
+                AssetRegistry.getAssetStore(HyspeechDialogAsset.class);
+
+        if(hyspeechDialogStore == null) {
+            return null;
+        }
+
+        DefaultAssetMap<String, HyspeechDialogAsset> assetMap = hyspeechDialogStore.getAssetMap();
+
+        if(assetMap == null) {
+            return null;
+        }
+
+        return assetMap.getAsset(key);
+    }
 
     public enum DialogType {
         CHOICE_2,
@@ -247,9 +233,17 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         UNSET;
     }
 
-    public DialogType currentDialogType = DialogType.UNSET;
+    public String getKey() {
+        return this.key;
+    }
 
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public DialogType currentDialogType = DialogType.UNSET;
     public boolean isProcessing = true;
+    public String key;
 
     public static class PageData {
         static final String KEY_NEXT = "Next";

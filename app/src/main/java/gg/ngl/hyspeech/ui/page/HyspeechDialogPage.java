@@ -117,7 +117,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 commands.append("Pages/HyspeechChoice2.ui");
 
                 for (int i = 0; i <= 1; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
             case CHOICE_3:
@@ -125,7 +125,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 commands.append("Pages/HyspeechChoice3.ui");
 
                 for (int i = 0; i <= 2; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
             case CHOICE_4:
@@ -133,21 +133,21 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 commands.append("Pages/HyspeechChoice4.ui");
 
                 for (int i = 0; i <= 3; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
             case DIALOG_1:
                 currentDialogType = DialogType.DIALOG_1;
                 commands.append("Pages/HyspeechDialog1.ui");
 
-                commands.set("#Content0.Text", Message.translation(asset.entries[0].content).param("username", playerRef.getUsername()));
+                commands.set("#Content0.TextSpans", Message.translation(asset.entries[0].content).param("username", playerRef.getUsername()));
                 break;
             case DIALOG_2:
                 currentDialogType = DialogType.DIALOG_2;
                 commands.append("Pages/HyspeechDialog2.ui");
 
                 for (int i = 0; i <= 1; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
             case DIALOG_3:
@@ -155,7 +155,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 commands.append("Pages/HyspeechDialog3.ui");
 
                 for (int i = 0; i <= 2; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
             case DIALOG_4:
@@ -163,7 +163,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 commands.append("Pages/HyspeechDialog4.ui");
 
                 for (int i = 0; i <= 3; i++) {
-                    commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
+                    commands.set("#Content" + i + ".TextSpans", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
 
@@ -183,7 +183,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         if (currentDialogType == DialogType.UNSET)
             this.close();
 
-        commands.set("#NameTitle.Text", Message.translation("hyspeech.dialog." + asset.getId() + ".name")
+        commands.set("#NameTitle.TextSpans", Message.translation("hyspeech.dialog." + asset.getId() + ".name")
                 .param("username", playerRef.getUsername()));
 
         isProcessing = false;

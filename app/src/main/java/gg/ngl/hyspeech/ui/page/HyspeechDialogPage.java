@@ -206,15 +206,6 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
             if (data.doNext != null && data.doNext) {
                 isProcessing = true;
 
-                /*macroAsset = getAsset().getMacro();
-                if(macroAsset != null) {
-                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
-                            .map(s -> s.replace("{username}", playerRef.getUsername()))
-                            .collect(Collectors.toCollection(ArrayDeque::new));
-
-                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
-                }*/
-
                 macroAsset = getAsset().getMacro();
                 if (macroAsset != null) {
                     ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
@@ -232,64 +223,77 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
             if (data.doEntry0 != null && data.doEntry0) {
                 isProcessing = true;
 
-                macroAsset = getAsset().getMacro();
-                if(macroAsset != null) {
-                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
-                            .map(s -> s.replace("{username}", playerRef.getUsername()))
-                            .collect(Collectors.toCollection(ArrayDeque::new));
+                if (asset.entries.length > 0) {
+                    macroAsset = getAsset().getEntries()[0].getMacro();
+                    if (macroAsset != null) {
+                        ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                                .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                                .collect(Collectors.toCollection(ArrayDeque::new));
 
-                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
-                }
+                        HytaleServer.get()
+                                .getCommandManager()
+                                .handleCommands(ConsoleSender.INSTANCE, deque);
+                    }
 
-                if (asset.entries.length > 0)
                     setKey(asset.getEntries()[0].getNext());
+                }
             }
 
             if (data.doEntry1 != null && data.doEntry1) {
                 isProcessing = true;
 
-                macroAsset = getAsset().getMacro();
-                if(macroAsset != null) {
-                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
-                            .map(s -> s.replace("{username}", playerRef.getUsername()))
-                            .collect(Collectors.toCollection(ArrayDeque::new));
+                if (asset.entries.length > 1) {
+                    macroAsset = getAsset().getEntries()[1].getMacro();
+                    if (macroAsset != null) {
+                        ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                                .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                                .collect(Collectors.toCollection(ArrayDeque::new));
 
-                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
-                }
+                        HytaleServer.get()
+                                .getCommandManager()
+                                .handleCommands(ConsoleSender.INSTANCE, deque);
+                    }
 
-                if (asset.entries.length > 1)
                     setKey(asset.getEntries()[1].getNext());
+                }
             }
 
             if (data.doEntry2 != null && data.doEntry2) {
                 isProcessing = true;
 
-                macroAsset = getAsset().getMacro();
-                if(macroAsset != null) {
-                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
-                            .map(s -> s.replace("{username}", playerRef.getUsername()))
-                            .collect(Collectors.toCollection(ArrayDeque::new));
+                if (asset.entries.length > 2) {
+                    macroAsset = getAsset().getEntries()[2].getMacro();
+                    if (macroAsset != null) {
+                        ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                                .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                                .collect(Collectors.toCollection(ArrayDeque::new));
 
-                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
-                }
+                        HytaleServer.get()
+                                .getCommandManager()
+                                .handleCommands(ConsoleSender.INSTANCE, deque);
+                    }
 
-                if (asset.entries.length > 2)
                     setKey(asset.getEntries()[2].getNext());
+                }
             }
 
             if (data.doEntry3 != null && data.doEntry3) {
                 isProcessing = true;
-                macroAsset = getAsset().getMacro();
-                if(macroAsset != null) {
-                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
-                            .map(s -> s.replace("{username}", playerRef.getUsername()))
-                            .collect(Collectors.toCollection(ArrayDeque::new));
 
-                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
-                }
+                if (asset.entries.length > 3) {
+                    macroAsset = getAsset().getEntries()[3].getMacro();
+                    if (macroAsset != null) {
+                        ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                                .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                                .collect(Collectors.toCollection(ArrayDeque::new));
 
-                if (asset.entries.length > 3)
+                        HytaleServer.get()
+                                .getCommandManager()
+                                .handleCommands(ConsoleSender.INSTANCE, deque);
+                    }
+
                     setKey(asset.getEntries()[3].getNext());
+                }
             }
 
             if (isProcessing) {
@@ -297,14 +301,6 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 return;
             }
         }
-
-        /*if (data.doNext != null && data.doNext && !this.isProcessing) {
-            isProcessing = true;
-            setKey(asset.getNext());
-
-            this.rebuild();
-            return;
-        }*/
 
         if (needsUpdate) {
             this.sendUpdate();

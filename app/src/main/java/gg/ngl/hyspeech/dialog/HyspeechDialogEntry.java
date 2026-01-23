@@ -4,6 +4,8 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.validation.Validators;
+import gg.ngl.hyspeech.commands.macro.HyspeechMacroAsset;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -43,10 +45,17 @@ public class HyspeechDialogEntry {
                             obj -> obj.next
                     )
                     .add()
+                    .append(
+                            new KeyedCodec<>("Hyspeech Macro", HyspeechMacroAsset.CODEC),
+                            (obj, val) -> obj.macro = val,
+                            obj -> obj.macro
+                    )
+                    .add()
                     .build();
 
     public String content;
     public String next;
+    public HyspeechMacroAsset macro;
 
     public HyspeechDialogEntry(String content, String next) {
         this.content = content;
@@ -62,6 +71,10 @@ public class HyspeechDialogEntry {
 
     public String getNext() {
         return this.next;
+    }
+
+    public HyspeechMacroAsset getMacro() {
+        return this.macro;
     }
 
     @Nonnull

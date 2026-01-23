@@ -13,6 +13,7 @@ import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.schema.metadata.ui.*;
 import com.hypixel.hytale.codec.validation.ValidatorCache;
 
+import gg.ngl.hyspeech.commands.macro.HyspeechMacroAsset;
 import gg.ngl.hyspeech.dialog.HyspeechDialogType.DialogType;
 
 import javax.annotation.Nonnull;
@@ -58,7 +59,7 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
                     )
                     .add()
                     .append(
-                            new KeyedCodec<>("Entries", new ArrayCodec<HyspeechDialogEntry>(HyspeechDialogEntry.CODEC, HyspeechDialogEntry[]::new)),
+                            new KeyedCodec<>("Entries", new ArrayCodec<>(HyspeechDialogEntry.CODEC, HyspeechDialogEntry[]::new)),
                             (asset, entries) -> {
                                 asset.entries = entries;
                             },
@@ -73,12 +74,19 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
                     )
                     .documentation("The next dialog that should open after continuing.\n\nThis will eventually be replaced with multiline components.")
                     .add()
+                    .append(
+                            new KeyedCodec<>("Hyspeech Macro", HyspeechMacroAsset.CODEC),
+                            (obj, val) -> obj.macro = val,
+                            obj -> obj.macro
+                    )
+                    .add()
                     .build();
 
     public static final ValidatorCache<String> VALIDATOR_CACHE = new ValidatorCache(new AssetKeyValidator(HyspeechDialogAsset::getAssetStore));
     private static AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> ASSET_STORE;
     public AssetExtraInfo.Data extraData;
     public DialogType type;
+    public HyspeechMacroAsset macro;
     public String id;
     public String icon;
     public HyspeechDialogEntry[] entries;
@@ -123,6 +131,10 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
 
     public String getNext() {
         return this.next;
+    }
+
+    public HyspeechMacroAsset getMacro() {
+        return this.macro;
     }
 
     @Nonnull

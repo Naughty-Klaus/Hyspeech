@@ -7,6 +7,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.asset.builder.BuilderSupport;
 import com.hypixel.hytale.server.npc.corecomponents.ActionBase;
+import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import com.hypixel.hytale.server.npc.role.Role;
 import com.hypixel.hytale.server.npc.sensorinfo.InfoProvider;
 
@@ -50,25 +51,29 @@ public class ActionBeginDialog extends ActionBase {
 
     @Override
     public boolean execute(@Nonnull Ref<EntityStore> ref, @Nonnull Role role, InfoProvider sensorInfo, double dt, @Nonnull Store<EntityStore> store) {
-        super.execute(ref, role, sensorInfo, dt, store);
+        if(canExecute(ref, role, sensorInfo, dt, store)) {
+            Ref<EntityStore> playerReference = role.getStateSupport().getInteractionIterationTarget();
+            if (playerReference == null) {
+                return false;
+            }
 
-        Ref<EntityStore> playerReference = role.getStateSupport().getInteractionIterationTarget();
-        if (playerReference == null) {
-            return false;
+            PlayerRef playerRefComponent = store.getComponent(playerReference, PlayerRef.getComponentType());
+            if (playerRefComponent == null) {
+                return false;
+            }
+
+            Player playerComponent = store.getComponent(playerReference, Player.getComponentType());
+            if (playerComponent == null) {
+                return false;
+            }
+
+            playerComponent.getPageManager().openCustomPage(ref, store,
+                    new HyspeechDialogPage(ref, role, sensorInfo, dt, store, playerRefComponent, this.dialogId));
+
+            super.execute(ref, role, sensorInfo, dt, store);
+            return true;
         }
-
-        PlayerRef playerRefComponent = store.getComponent(playerReference, PlayerRef.getComponentType());
-        if (playerRefComponent == null) {
-            return false;
-        }
-
-        Player playerComponent = store.getComponent(playerReference, Player.getComponentType());
-        if (playerComponent == null) {
-            return false;
-        }
-
-        playerComponent.getPageManager().openCustomPage(ref, store, new HyspeechDialogPage(playerRefComponent, this.dialogId));
-        return true;
+        return false;
     }
 
 }

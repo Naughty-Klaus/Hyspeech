@@ -3,6 +3,7 @@ package gg.ngl.hyspeech.ui.page;
 import com.hypixel.hytale.assetstore.AssetRegistry;
 import com.hypixel.hytale.assetstore.AssetStore;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
+import com.hypixel.hytale.builtin.commandmacro.MacroCommandPlugin;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -10,7 +11,10 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
+import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.command.system.CommandManager;
+import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -18,47 +22,91 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
+import com.hypixel.hytale.server.npc.role.Role;
+import com.hypixel.hytale.server.npc.sensorinfo.InfoProvider;
 import gg.ngl.hyspeech.Hyspeech;
+import gg.ngl.hyspeech.commands.macro.HyspeechMacroAsset;
 import gg.ngl.hyspeech.dialog.HyspeechDialogAsset;
 
 import static gg.ngl.hyspeech.ui.page.HyspeechDialogPage.PageData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * Hyspeech - Character dialog system for Hytale
+ * Copyright (C) 2026 Naughty-Klaus
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
 
-    public HyspeechDialogPage(PlayerRef playerRef, String key) {
+    @Nonnull
+    private final Ref<EntityStore> ref;
+    @Nonnull
+    private final Role role;
+    private final InfoProvider sensorInfo;
+    private final double deltaTime;
+    @Nonnull
+    private final Store<EntityStore> store;
+    public DialogType currentDialogType = DialogType.UNSET;
+    public boolean isProcessing = true;
+    public String key;
+
+    public HyspeechDialogPage(@Nonnull Ref<EntityStore> ref, @Nonnull Role role, InfoProvider sensorInfo, double dt, @Nonnull Store<EntityStore> store, PlayerRef playerRef, String key) {
         super(playerRef, CustomPageLifetime.CanDismissOrCloseThroughInteraction, PageData.CODEC);
         setKey(key);
+
+        this.ref = ref;
+        this.role = role;
+        this.sensorInfo = sensorInfo;
+        this.deltaTime = dt;
+        this.store = store;
+    }
+
+    public Ref<EntityStore> getRef() {
+        return ref;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public InfoProvider getSensorInfo() {
+        return sensorInfo;
+    }
+
+    public double getDelta() {
+        return deltaTime;
+    }
+
+    public Store<EntityStore> getStore() {
+        return store;
     }
 
     @Override
-    public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commands, @Nonnull UIEventBuilder eventBuilder, @Nonnull Store<EntityStore> store) {
+    public void build(@Nonnull Ref<EntityStore> entRef, @Nonnull UICommandBuilder commands, @Nonnull UIEventBuilder eventBuilder, @Nonnull Store<EntityStore> entStore) {
         HyspeechDialogAsset asset = getAsset();
 
-        if(asset == null) {
+        if (asset == null) {
             this.close();
             return;
         }
@@ -68,7 +116,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.CHOICE_2;
                 commands.append("Pages/HyspeechChoice2.ui");
 
-                for(int i = 0; i <= 1; i++) {
+                for (int i = 0; i <= 1; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -76,7 +124,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.CHOICE_3;
                 commands.append("Pages/HyspeechChoice3.ui");
 
-                for(int i = 0; i <= 2; i++) {
+                for (int i = 0; i <= 2; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -84,7 +132,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.CHOICE_4;
                 commands.append("Pages/HyspeechChoice4.ui");
 
-                for(int i = 0; i <= 3; i++) {
+                for (int i = 0; i <= 3; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -98,7 +146,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.DIALOG_2;
                 commands.append("Pages/HyspeechDialog2.ui");
 
-                for(int i = 0; i <= 1; i++) {
+                for (int i = 0; i <= 1; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -106,7 +154,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.DIALOG_3;
                 commands.append("Pages/HyspeechDialog3.ui");
 
-                for(int i = 0; i <= 2; i++) {
+                for (int i = 0; i <= 2; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -114,7 +162,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 currentDialogType = DialogType.DIALOG_4;
                 commands.append("Pages/HyspeechDialog4.ui");
 
-                for(int i = 0; i <= 3; i++) {
+                for (int i = 0; i <= 3; i++) {
                     commands.set("#Content" + i + ".Text", Message.translation(asset.entries[i].content).param("username", playerRef.getUsername()));
                 }
                 break;
@@ -124,7 +172,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                 break;
         }
 
-        if(currentDialogType.name().contains("DIALOG"))
+        if (currentDialogType.name().contains("DIALOG"))
             eventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#NextButton", EventData.of("Next", "true"));
         else if (currentDialogType.name().contains("CHOICE")) {
             for (int i = 0; i < asset.entries.length; i++) {
@@ -132,7 +180,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
             }
         }
 
-        if(currentDialogType == DialogType.UNSET)
+        if (currentDialogType == DialogType.UNSET)
             this.close();
 
         commands.set("#NameTitle.Text", Message.translation("hyspeech.dialog." + asset.getId() + ".name")
@@ -142,63 +190,121 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
     }
 
     @Override
-    public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull PageData data) {
+    public void handleDataEvent(@Nonnull Ref<EntityStore> entRef, @Nonnull Store<EntityStore> entStore, @Nonnull PageData data) {
         boolean needsUpdate = false;
 
         HyspeechDialogAsset asset = getAsset();
+        HyspeechMacroAsset macroAsset = null;
 
-        if(asset == null) {
+        if (asset == null) {
             this.close();
             return;
         }
 
-        if(!this.isProcessing) {
+        if (!this.isProcessing) {
+
             if (data.doNext != null && data.doNext) {
                 isProcessing = true;
+
+                /*macroAsset = getAsset().getMacro();
+                if(macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(s -> s.replace("{username}", playerRef.getUsername()))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
+
+                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
+                }*/
+
+                macroAsset = getAsset().getMacro();
+                if (macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
+
+                    HytaleServer.get()
+                            .getCommandManager()
+                            .handleCommands(ConsoleSender.INSTANCE, deque);
+                }
+
                 setKey(asset.getNext());
             }
 
             if (data.doEntry0 != null && data.doEntry0) {
                 isProcessing = true;
 
-                if(asset.entries.length > 0)
+                macroAsset = getAsset().getMacro();
+                if(macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(s -> s.replace("{username}", playerRef.getUsername()))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
+
+                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
+                }
+
+                if (asset.entries.length > 0)
                     setKey(asset.getEntries()[0].getNext());
             }
 
             if (data.doEntry1 != null && data.doEntry1) {
                 isProcessing = true;
 
-                if(asset.entries.length > 1)
+                macroAsset = getAsset().getMacro();
+                if(macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(s -> s.replace("{username}", playerRef.getUsername()))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
+
+                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
+                }
+
+                if (asset.entries.length > 1)
                     setKey(asset.getEntries()[1].getNext());
             }
 
             if (data.doEntry2 != null && data.doEntry2) {
                 isProcessing = true;
 
-                if(asset.entries.length > 2)
+                macroAsset = getAsset().getMacro();
+                if(macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(s -> s.replace("{username}", playerRef.getUsername()))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
+
+                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
+                }
+
+                if (asset.entries.length > 2)
                     setKey(asset.getEntries()[2].getNext());
             }
 
             if (data.doEntry3 != null && data.doEntry3) {
                 isProcessing = true;
+                macroAsset = getAsset().getMacro();
+                if(macroAsset != null) {
+                    ArrayDeque<String> deque = Arrays.stream(macroAsset.getCommands())
+                            .map(s -> s.replace("{username}", playerRef.getUsername()))
+                            .collect(Collectors.toCollection(ArrayDeque::new));
 
-                if(asset.entries.length > 3)
+                    HytaleServer.get().getCommandManager().handleCommands(ConsoleSender.INSTANCE, deque);
+                }
+
+                if (asset.entries.length > 3)
                     setKey(asset.getEntries()[3].getNext());
             }
 
-            if(isProcessing) {
+            if (isProcessing) {
                 this.rebuild();
                 return;
             }
         }
 
-        if (data.doNext != null && data.doNext && !this.isProcessing) {
+        /*if (data.doNext != null && data.doNext && !this.isProcessing) {
             isProcessing = true;
             setKey(asset.getNext());
 
             this.rebuild();
             return;
-        }
+        }*/
 
         if (needsUpdate) {
             this.sendUpdate();
@@ -209,19 +315,26 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> hyspeechDialogStore =
                 AssetRegistry.getAssetStore(HyspeechDialogAsset.class);
 
-        if(hyspeechDialogStore == null) {
+        if (hyspeechDialogStore == null) {
             return null;
         }
 
         DefaultAssetMap<String, HyspeechDialogAsset> assetMap = hyspeechDialogStore.getAssetMap();
 
-        if(assetMap == null) {
+        if (assetMap == null) {
             return null;
         }
 
         return assetMap.getAsset(key);
     }
 
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
     public enum DialogType {
         CHOICE_2,
         CHOICE_3,
@@ -233,25 +346,7 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
         UNSET;
     }
 
-    public String getKey() {
-        return this.key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public DialogType currentDialogType = DialogType.UNSET;
-    public boolean isProcessing = true;
-    public String key;
-
     public static class PageData {
-        static final String KEY_NEXT = "Next";
-        static final String KEY_ENTRY0 = "Entry0";
-        static final String KEY_ENTRY1 = "Entry1";
-        static final String KEY_ENTRY2 = "Entry2";
-        static final String KEY_ENTRY3 = "Entry3";
-
         public static final BuilderCodec<PageData> CODEC =
                 BuilderCodec.builder(PageData.class, PageData::new)
                         .append(
@@ -285,7 +380,11 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<PageData> {
                         )
                         .add()
                         .build();
-
+        static final String KEY_NEXT = "Next";
+        static final String KEY_ENTRY0 = "Entry0";
+        static final String KEY_ENTRY1 = "Entry1";
+        static final String KEY_ENTRY2 = "Entry2";
+        static final String KEY_ENTRY3 = "Entry3";
         @Nullable
         private Boolean doNext;
         @Nullable

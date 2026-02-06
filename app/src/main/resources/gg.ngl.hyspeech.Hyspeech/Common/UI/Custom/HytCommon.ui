@@ -52,7 +52,7 @@ $Sounds = "HytSounds.ui";
   FontSize: 17,
   TextColor: #bfcdd5,
   RenderBold: true,
-  RenderUppercase: true,
+  RenderUppercase: false,
   HorizontalAlignment: Center,
   VerticalAlignment: Center
 );
@@ -647,7 +647,7 @@ $Sounds = "HytSounds.ui";
 @TitleStyle = LabelStyle(
   FontSize: 15,
   VerticalAlignment: Center,
-  RenderUppercase: true,
+  RenderUppercase: false,
   TextColor: #b4c8c9,
   FontName: "Secondary",
   RenderBold: true,

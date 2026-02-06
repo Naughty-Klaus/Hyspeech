@@ -1,28 +1,33 @@
 package gg.ngl.hyspeech;
 
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
-import com.hypixel.hytale.server.core.util.UUIDUtil;
 import com.hypixel.hytale.server.npc.NPCPlugin;
-import gg.ngl.hyspeech.commands.HyspeechCommand;
-import gg.ngl.hyspeech.commands.macro.HyspeechMacroAsset;
-import gg.ngl.hyspeech.dialog.HyspeechDialogAsset;
-import gg.ngl.hyspeech.dialog.action.builder.BuilderActionBeginDialog;
-import gg.ngl.hyspeech.param.ParameterProcessor;
-import gg.ngl.hyspeech.param.ParameterResolver;
+import gg.ngl.hyspeech.player.HyspeechPlayer;
+import gg.ngl.hyspeech.player.commands.DeactivateHyspeechCommand;
+import gg.ngl.hyspeech.player.commands.HyspeechCommand;
+import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
+import gg.ngl.hyspeech.asset.dialog.HyspeechDialogAsset;
+import gg.ngl.hyspeech.asset.dialog.action.builder.BuilderActionBeginDialog;
+import gg.ngl.hyspeech.util.param.ParameterProcessor;
+import gg.ngl.hyspeech.util.param.ParameterResolver;
+import gg.ngl.hyspeech.player.HyspeechPlayerConfig;
+import gg.ngl.hyspeech.asset.quest.HyspeechQuestAsset;
 
+import java.io.File;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
  *
@@ -46,7 +51,20 @@ import java.util.function.Supplier;
 
 public class Hyspeech extends JavaPlugin {
 
+    private static Hyspeech INSTANCE;
     private final Map<String, ParameterProcessor<?>> processors = new ConcurrentHashMap<>();
+    public static final Map<PlayerRef, HyspeechPlayer> hyspeechPlayerMap = new ConcurrentHashMap<>();
+    private Config<HyspeechConfig> config;
+
+    public Hyspeech(JavaPluginInit init) {
+        super(init);
+        Hyspeech.INSTANCE = this;
+        config = withConfig(HyspeechConfig.CODEC);
+    }
+
+    public static Hyspeech get() {
+        return Hyspeech.INSTANCE;
+    }
 
     public <C> void registerParameter(
             String key,
@@ -72,22 +90,8 @@ public class Hyspeech extends JavaPlugin {
         return message;
     }
 
-    private static Hyspeech INSTANCE;
-
-    public static Hyspeech get() {
-        return Hyspeech.INSTANCE;
-    }
-
-    private Config<HyspeechConfig> config;
-
     public Config<HyspeechConfig> getConfig() {
         return config;
-    }
-
-    public Hyspeech(JavaPluginInit init) {
-        super(init);
-        Hyspeech.INSTANCE = this;
-        config = withConfig(HyspeechConfig.CODEC);
     }
 
     @Override
@@ -99,6 +103,11 @@ public class Hyspeech extends JavaPlugin {
 
         NPCPlugin.get().registerCoreComponentType("HyspeechBeginDialog", BuilderActionBeginDialog::new);
 
+        registerAssetTypes();
+        registerEvents();
+    }
+
+    public void registerAssetTypes() {
         HytaleAssetStore.Builder<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> dialogAssetBuilder =
                 HytaleAssetStore.builder(
                         HyspeechDialogAsset.class,
@@ -108,6 +117,12 @@ public class Hyspeech extends JavaPlugin {
         HytaleAssetStore.Builder<String, HyspeechMacroAsset, DefaultAssetMap<String, HyspeechMacroAsset>> macroAssetBuilder =
                 HytaleAssetStore.builder(
                         HyspeechMacroAsset.class,
+                        new DefaultAssetMap<>()
+                );
+
+        HytaleAssetStore.Builder<String, HyspeechQuestAsset, DefaultAssetMap<String, HyspeechQuestAsset>> questAssetBuilder =
+                HytaleAssetStore.builder(
+                        HyspeechQuestAsset.class,
                         new DefaultAssetMap<>()
                 );
 
@@ -121,12 +136,60 @@ public class Hyspeech extends JavaPlugin {
         );
 
         this.getAssetRegistry().register(
+                questAssetBuilder
+                        .setPath("HyspeechQuest")
+                        .setCodec(HyspeechQuestAsset.CODEC)
+                        .setKeyFunction(HyspeechQuestAsset::getId)
+                        .loadsAfter(Interaction.class)
+                        .build()
+        );
+
+        this.getAssetRegistry().register(
                 dialogAssetBuilder
                         .setPath("HyspeechDialog")
                         .setCodec(HyspeechDialogAsset.CODEC)
                         .setKeyFunction(HyspeechDialogAsset::getId)
                         .loadsAfter(Interaction.class)
                         .build()
+        );
+    }
+
+    public void registerEvents() {
+        this.getEventRegistry().register(
+                PlayerConnectEvent.class,
+                playerConnectEvent ->
+                        hyspeechPlayerMap.putIfAbsent(
+                                playerConnectEvent.getPlayerRef(),
+                                new HyspeechPlayer(playerConnectEvent.getPlayerRef())
+                        )
+        );
+
+        this.getEventRegistry().register(
+                PlayerDisconnectEvent.class,
+                playerDisconnectEvent -> {
+                    HyspeechPlayer player = hyspeechPlayerMap.get(playerDisconnectEvent.getPlayerRef());
+
+                    Config<HyspeechPlayerConfig> cfg = new Config<>(
+                            new File("config/hyspeech/player_data/").toPath(),
+                            playerDisconnectEvent.getPlayerRef().getUsername(),
+                            HyspeechPlayerConfig.CODEC
+                    );
+
+                    cfg.load().thenAccept((_cfg) -> {
+                        _cfg.setUuid(player.getConfig().get().playerUuid);
+                        _cfg.setQuests(player.getConfig().get().quests);
+                    }).thenAccept((_) -> {
+                        cfg.save().thenAccept((_) -> {
+                            hyspeechPlayerMap.remove(playerDisconnectEvent.getPlayerRef());
+                        });
+                    });
+
+                    /*player.getConfig().save().thenRun(() -> {
+                        player.getConfig().load().thenRun(() -> {
+                            hyspeechPlayerMap.remove(playerDisconnectEvent.getPlayerRef());
+                        });
+                    });*/
+                }
         );
     }
 

@@ -2,7 +2,6 @@ package gg.ngl.hyspeech.player;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.Config;
-import gg.ngl.hyspeech.HyspeechConfig;
 
 import java.io.File;
 
@@ -27,8 +26,7 @@ public class HyspeechPlayer {
         config.save();
     }
 
-    protected HyspeechPlayer() {
-    }
+    protected HyspeechPlayer() {}
 
     private PlayerRef player;
 

@@ -32,7 +32,7 @@ public class HyspeechDialogType {
         DIALOG_2,
         DIALOG_3,
         DIALOG_4,
-        UNSET;
+        UNSET
     }
 
     public static final EnumCodec<DialogType> DIALOG_TYPE_ENUM_CODEC = new EnumCodec<>(DialogType.class);

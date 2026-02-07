@@ -73,6 +73,12 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
                     )
                     .documentation("The next dialog that should open after continuing.\n\nThis will eventually be replaced with multiline components.")
                     .add()
+                    .append(new KeyedCodec<>("Typewriter Effect", Codec.BOOLEAN),
+                            (obj, val) -> obj.typewriterEffect = val,
+                            obj -> obj.typewriterEffect
+                    )
+                    .documentation("Should the dialog be written over time like a typewriter?")
+                    .add()
                     .append(
                             new KeyedCodec<>("Hyspeech Macro", HyspeechMacroAsset.CODEC),
                             (obj, val) -> obj.macro = val,
@@ -84,12 +90,17 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
     public static final ValidatorCache<String> VALIDATOR_CACHE = new ValidatorCache(new AssetKeyValidator(HyspeechDialogAsset::getAssetStore));
     private static AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> ASSET_STORE;
     public AssetExtraInfo.Data extraData;
-    public DialogType type;
+    public DialogType type = DialogType.DIALOG_1;
     public HyspeechMacroAsset macro;
     public String id;
-    public String icon;
     public HyspeechDialogEntry[] entries;
     public String next;
+
+    public boolean typewriterEffect = false;
+
+    public boolean isTypewriterEffectEnabled() {
+        return this.typewriterEffect;
+    }
 
     public static AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> getAssetStore() {
         if (ASSET_STORE == null) {
@@ -102,9 +113,8 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
         return HyspeechDialogAsset.getAssetStore().getAssetMap();
     }
 
-    public HyspeechDialogAsset(String id, String icon, HyspeechDialogEntry[] entries) {
+    public HyspeechDialogAsset(String id, HyspeechDialogEntry[] entries) {
         this.id = id;
-        this.icon = icon;
         this.entries = entries;
     }
 
@@ -118,10 +128,6 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
 
     public DialogType getType() {
         return this.type;
-    }
-
-    public String getIcon() {
-        return this.icon;
     }
 
     public HyspeechDialogEntry[] getEntries() {
@@ -138,7 +144,7 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
 
     @Nonnull
     public String toString() {
-        return "HyspeechDialogAsset{id='" + this.id + "', icon='" + this.icon + "', entries='" + Arrays.toString(this.entries) + "'}";
+        return "HyspeechDialogAsset{id='" + this.id + "', entries='" + Arrays.toString(this.entries) + "'}";
     }
 
 }

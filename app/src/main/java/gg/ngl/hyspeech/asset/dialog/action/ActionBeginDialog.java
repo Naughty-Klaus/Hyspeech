@@ -67,7 +67,7 @@ public class ActionBeginDialog extends ActionBase {
             }
 
             playerComponent.getPageManager().openCustomPage(ref, store,
-                    new HyspeechDialogPage(ref, role, sensorInfo, dt, store, playerRefComponent, this.dialogId));
+                    new HyspeechDialogPage(ref, store, playerRefComponent, this.dialogId));
 
             super.execute(ref, role, sensorInfo, dt, store);
             return true;

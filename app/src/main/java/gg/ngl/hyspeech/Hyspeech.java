@@ -47,15 +47,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Hyspeech extends JavaPlugin {
 
-    public static final Gson GSON = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeNulls()
-            .create();
-
     private static Hyspeech INSTANCE;
     private final Map<String, ParameterProcessor<?>> processors = new ConcurrentHashMap<>();
     public static final Map<PlayerRef, HyspeechPlayer> hyspeechPlayerMap = new ConcurrentHashMap<>();
-    private Config<HyspeechConfig> config;
+    private final Config<HyspeechConfig> config;
 
     public Hyspeech(JavaPluginInit init) {
         super(init);
@@ -186,7 +181,5 @@ public class Hyspeech extends JavaPlugin {
         getConfig().save();
     }
 
-    public void disable() {
-
-    }
+    public void disable() {}
 }

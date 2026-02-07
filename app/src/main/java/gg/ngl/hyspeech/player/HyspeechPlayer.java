@@ -12,14 +12,17 @@ public class HyspeechPlayer {
 
         config = new Config<>(
                 new File("config/hyspeech/player_data/").toPath(),
-                player.getUsername(),
+                player.getUuid().toString(),
                 HyspeechPlayerConfig.CODEC
         );
 
         getConfig().load().thenAccept((config) -> {
             if(config.playerUuid == null)
                 config.setUuid(getPlayerRef().getUuid());
-        });
+        }).exceptionally((throwable -> {
+            throwable.printStackTrace();
+            return null;
+        }));
 
         config.save();
     }

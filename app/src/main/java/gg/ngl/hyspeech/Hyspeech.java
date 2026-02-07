@@ -1,20 +1,18 @@
 package gg.ngl.hyspeech;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
-import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import gg.ngl.hyspeech.player.HyspeechPlayer;
-import gg.ngl.hyspeech.player.commands.DeactivateHyspeechCommand;
 import gg.ngl.hyspeech.player.commands.HyspeechCommand;
 import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
 import gg.ngl.hyspeech.asset.dialog.HyspeechDialogAsset;
@@ -22,12 +20,10 @@ import gg.ngl.hyspeech.asset.dialog.action.builder.BuilderActionBeginDialog;
 import gg.ngl.hyspeech.util.param.ParameterProcessor;
 import gg.ngl.hyspeech.util.param.ParameterResolver;
 import gg.ngl.hyspeech.player.HyspeechPlayerConfig;
-import gg.ngl.hyspeech.asset.quest.HyspeechQuestAsset;
 
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  *
@@ -50,6 +46,11 @@ import java.util.function.Consumer;
  */
 
 public class Hyspeech extends JavaPlugin {
+
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .create();
 
     private static Hyspeech INSTANCE;
     private final Map<String, ParameterProcessor<?>> processors = new ConcurrentHashMap<>();
@@ -120,26 +121,11 @@ public class Hyspeech extends JavaPlugin {
                         new DefaultAssetMap<>()
                 );
 
-        HytaleAssetStore.Builder<String, HyspeechQuestAsset, DefaultAssetMap<String, HyspeechQuestAsset>> questAssetBuilder =
-                HytaleAssetStore.builder(
-                        HyspeechQuestAsset.class,
-                        new DefaultAssetMap<>()
-                );
-
         this.getAssetRegistry().register(
                 macroAssetBuilder
                         .setPath("HyspeechMacro")
                         .setCodec(HyspeechMacroAsset.CODEC)
                         .setKeyFunction(HyspeechMacroAsset::getId)
-                        .loadsAfter(Interaction.class)
-                        .build()
-        );
-
-        this.getAssetRegistry().register(
-                questAssetBuilder
-                        .setPath("HyspeechQuest")
-                        .setCodec(HyspeechQuestAsset.CODEC)
-                        .setKeyFunction(HyspeechQuestAsset::getId)
                         .loadsAfter(Interaction.class)
                         .build()
         );
@@ -177,18 +163,11 @@ public class Hyspeech extends JavaPlugin {
 
                     cfg.load().thenAccept((_cfg) -> {
                         _cfg.setUuid(player.getConfig().get().playerUuid);
-                        _cfg.setQuests(player.getConfig().get().quests);
                     }).thenAccept((_) -> {
                         cfg.save().thenAccept((_) -> {
                             hyspeechPlayerMap.remove(playerDisconnectEvent.getPlayerRef());
                         });
                     });
-
-                    /*player.getConfig().save().thenRun(() -> {
-                        player.getConfig().load().thenRun(() -> {
-                            hyspeechPlayerMap.remove(playerDisconnectEvent.getPlayerRef());
-                        });
-                    });*/
                 }
         );
     }

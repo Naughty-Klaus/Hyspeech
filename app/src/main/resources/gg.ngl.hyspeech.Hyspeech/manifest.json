@@ -1,13 +1,16 @@
 {
   "Group": "gg.ngl.hyspeech",
   "Name": "Hyspeech",
-  "Version": "1.0.4",
+  "Version": "1.0.5",
   "Description": "UI elements for Hyspeech",
   "Authors": [
     {
       "Name": "Arrav",
-      "Email": "",
-      "Url": ""
+      "Url": "http://ngl.gg"
+    },
+    {
+      "Name": "Naughty Klaus",
+      "Url": "http://ngl.gg"
     }
   ],
   "Website": "hy.ngl.gg",

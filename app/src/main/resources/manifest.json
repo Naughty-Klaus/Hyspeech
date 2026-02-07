@@ -1,11 +1,16 @@
 {
   "Group": "gg.ngl.hyspeech",
   "Name": "hyspeech",
-  "Version": "1.0.4",
+  "Version": "1.0.5",
   "Description": "Introduces configurable dialogue via Asset Editor, including UI.",
   "Authors": [
     {
-      "Name": "Arrav"
+      "Name": "Arrav",
+      "Url": "http://ngl.gg"
+    },
+    {
+      "Name": "Naughty Klaus",
+      "Url": "http://ngl.gg"
     }
   ],
   "Main": "gg.ngl.hyspeech.Hyspeech",

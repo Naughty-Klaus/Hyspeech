@@ -5,6 +5,7 @@ import com.hypixel.hytale.assetstore.AssetStore;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.protocol.FormattedMessage;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.HytaleServer;
@@ -19,6 +20,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import gg.ngl.hyspeech.Hyspeech;
 import gg.ngl.hyspeech.asset.dialog.HyspeechDialogAsset;
 import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
+import gg.ngl.hyspeech.util.param.BuildContext;
+import gg.ngl.hyspeech.util.param.ParameterContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,18 +95,25 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<HyspeechDialogPa
         commands.append(currentDialogType.uiPath);
         int totalEntries = currentDialogType.entries;
 
-        commands.set("#NameTitle.TextSpans",
-                Message.translation("hyspeech.dialog." + asset.getId() + ".name")
-                    .param("username", playerRef.getUsername())
-        );
+        ParameterContext ctx = new ParameterContext();
+
+        ctx.put(PlayerRef.class, playerRef);
+        ctx.put(Hyspeech.class, Hyspeech.get());
+
+        Hyspeech.get().populateContext(ctx);
+
+        Message message = Message.translation("hyspeech.dialog." + asset.getId() + ".name");
+        message = Message.translation(Hyspeech.get().process(message.getAnsiMessage(), ctx));
+
+        commands.set("#NameTitle.TextSpans", message);
 
         int count = Math.min(totalEntries, asset.entries.length);
 
         for (int i = 0; i < count; i++) {
-            commands.set("#Content" + i + ".TextSpans",
-                    Message.translation(asset.entries[i].content)
-                            .param("username", playerRef.getUsername())
-            );
+            message = Message.translation(asset.entries[i].content);
+            message = Message.translation(Hyspeech.get().process(message.getAnsiMessage(), ctx));
+
+            commands.set("#Content" + i + ".TextSpans", message);
         }
 
         if (currentDialogType.isDialog()) {
@@ -172,8 +182,12 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<HyspeechDialogPa
         if (macro == null)
             return;
 
+        ParameterContext ctx = new ParameterContext();
+        ctx.put(PlayerRef.class, playerRef);
+        ctx.put(Hyspeech.class, Hyspeech.get());
+
         ArrayDeque<String> commands = Arrays.stream(macro.getCommands())
-                .map(cmd -> Hyspeech.get().process(cmd, playerRef))
+                .map(cmd -> Hyspeech.get().process(cmd, ctx))
                 .collect(Collectors.toCollection(ArrayDeque::new));
 
         HytaleServer.get()

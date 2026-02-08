@@ -1,6 +1,7 @@
 package gg.ngl.hyspeech.util.param;
 
-public class ParameterProcessor<C> {
+public final class ParameterProcessor<C> {
+
     private final String key;
     private final Class<C> contextType;
     private final ParameterResolver<C> resolver;
@@ -15,11 +16,11 @@ public class ParameterProcessor<C> {
         return key;
     }
 
-    public boolean supports(Object context) {
-        return contextType.isInstance(context);
+    public boolean supports(ParameterContext ctx) {
+        return ctx.has(contextType);
     }
 
-    public String resolve(Object context) {
-        return resolver.resolve(contextType.cast(context));
+    public String resolve(ParameterContext ctx) {
+        return resolver.resolve(ctx.get(contextType));
     }
 }

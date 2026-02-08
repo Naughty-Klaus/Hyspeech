@@ -1,7 +1,5 @@
 package gg.ngl.hyspeech;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
@@ -9,19 +7,26 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.Config;
 import com.hypixel.hytale.server.npc.NPCPlugin;
+import gg.ngl.hyspeech.demo.DemoClass;
 import gg.ngl.hyspeech.player.HyspeechPlayer;
 import gg.ngl.hyspeech.player.commands.HyspeechCommand;
 import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
 import gg.ngl.hyspeech.asset.dialog.HyspeechDialogAsset;
 import gg.ngl.hyspeech.asset.dialog.action.builder.BuilderActionBeginDialog;
+import gg.ngl.hyspeech.player.commands.HyspeechDemoCommand;
+import gg.ngl.hyspeech.util.param.ParameterContext;
+import gg.ngl.hyspeech.util.param.ParameterContextContributor;
 import gg.ngl.hyspeech.util.param.ParameterProcessor;
 import gg.ngl.hyspeech.util.param.ParameterResolver;
 import gg.ngl.hyspeech.player.HyspeechPlayerConfig;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +57,18 @@ public class Hyspeech extends JavaPlugin {
     public static final Map<PlayerRef, HyspeechPlayer> hyspeechPlayerMap = new ConcurrentHashMap<>();
     private final Config<HyspeechConfig> config;
 
+    private final List<ParameterContextContributor> contributors = new ArrayList<>();
+
+    public void registerContextContributor(ParameterContextContributor contributor) {
+        contributors.add(contributor);
+    }
+
+    public void populateContext(ParameterContext ctx) {
+        for (ParameterContextContributor contributor : contributors) {
+            contributor.contribute(ctx);
+        }
+    }
+
     public Hyspeech(JavaPluginInit init) {
         super(init);
         Hyspeech.INSTANCE = this;
@@ -74,12 +91,24 @@ public class Hyspeech extends JavaPlugin {
         return processors.get(key);
     }
 
-    public String process(String message, Object context) {
+    /*public String process(String message, Object context) {
         for (ParameterProcessor<?> processor : processors.values()) {
             if (processor.supports(context)) {
                 message = message.replace(
                         processor.key(),
                         processor.resolve(context)
+                );
+            }
+        }
+        return message;
+    }*/
+
+    public String process(String message, ParameterContext ctx) {
+        for (ParameterProcessor<?> processor : processors.values()) {
+            if (processor.supports(ctx)) {
+                message = message.replace(
+                        processor.key(),
+                        processor.resolve(ctx)
                 );
             }
         }
@@ -92,10 +121,30 @@ public class Hyspeech extends JavaPlugin {
 
     @Override
     public void setup() {
-        get().registerParameter("{username}", PlayerRef.class, PlayerRef::getUsername);
-        get().registerParameter("{uuid}", PlayerRef.class, p -> p.getUuid().toString());
+        Hyspeech.get().registerParameter("{username}", PlayerRef.class, PlayerRef::getUsername);
+        Hyspeech.get().registerParameter("{uuid}", PlayerRef.class, p -> p.getUuid().toString());
+        Hyspeech.get().registerParameter("{lang}", PlayerRef.class, PlayerRef::getLanguage);
+
+        /*
+         * Start of demo-code. For use by developers. This is an example on how to use their own custom data.
+         */
+
+        Hyspeech.get().registerParameter(
+                "{mydata}",
+                DemoClass.class,
+                DemoClass::getCustomData
+        );
+
+        Hyspeech.get().registerContextContributor(ctx -> {
+            ctx.put(DemoClass.class, new DemoClass());
+        });
+
+        /*
+         * End of demo-code.
+         */
 
         this.getCommandRegistry().registerCommand(new HyspeechCommand());
+        this.getCommandRegistry().registerCommand(new HyspeechDemoCommand());
 
         NPCPlugin.get().registerCoreComponentType("HyspeechBeginDialog", BuilderActionBeginDialog::new);
 

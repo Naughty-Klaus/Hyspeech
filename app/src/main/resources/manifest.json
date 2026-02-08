@@ -1,7 +1,7 @@
 {
   "Group": "gg.ngl.hyspeech",
   "Name": "hyspeech",
-  "Version": "1.0.5",
+  "Version": "1.0.6",
   "Description": "Introduces configurable dialogue via Asset Editor, including UI.",
   "Authors": [
     {

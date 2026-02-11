@@ -9,4 +9,5 @@ public record BuildContext(
         PlayerRef player,
         Ref<EntityStore> entRef,
         Store<EntityStore> entStore
-) {}
+) {
+}

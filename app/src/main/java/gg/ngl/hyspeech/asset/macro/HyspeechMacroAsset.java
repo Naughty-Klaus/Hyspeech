@@ -11,29 +11,28 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.ValidatorCache;
-
-import gg.ngl.hyspeech.asset.dialog.HyspeechDialogType.DialogType;
+import gg.ngl.hyspeech.asset.dialog.HyspeechDialogType;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 /**
  *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
+ * Hyspeech - Character dialog system for Hytale
+ * Copyright (C) 2026 Naughty-Klaus
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -60,14 +59,21 @@ public class HyspeechMacroAsset implements JsonAssetWithMap<String, DefaultAsset
                     .documentation("Commands to execute in order. Use {username} to target the player who executed the dialog.")
                     .add()
                     .build();
-
-    public static final ValidatorCache<String> VALIDATOR_CACHE = new ValidatorCache(new AssetKeyValidator(HyspeechMacroAsset::getAssetStore));
     private static AssetStore<String, HyspeechMacroAsset, DefaultAssetMap<String, HyspeechMacroAsset>> ASSET_STORE;
+    public static final ValidatorCache<String> VALIDATOR_CACHE = new ValidatorCache(new AssetKeyValidator(HyspeechMacroAsset::getAssetStore));
     public AssetExtraInfo.Data extraData;
-    public DialogType type;
+    public HyspeechDialogType type;
     public String id;
     public String[] commands;
     public String next;
+
+    public HyspeechMacroAsset(String id, String[] commands) {
+        this.id = id;
+        this.commands = commands;
+    }
+
+    protected HyspeechMacroAsset() {
+    }
 
     public static AssetStore<String, HyspeechMacroAsset, DefaultAssetMap<String, HyspeechMacroAsset>> getAssetStore() {
         if (ASSET_STORE == null) {
@@ -80,20 +86,12 @@ public class HyspeechMacroAsset implements JsonAssetWithMap<String, DefaultAsset
         return HyspeechMacroAsset.getAssetStore().getAssetMap();
     }
 
-    public HyspeechMacroAsset(String id, String[] commands) {
-        this.id = id;
-        this.commands = commands;
-    }
-
-    protected HyspeechMacroAsset() {
-    }
-
     @Override
     public String getId() {
         return this.id;
     }
 
-    public DialogType getType() {
+    public HyspeechDialogType getType() {
         return this.type;
     }
 

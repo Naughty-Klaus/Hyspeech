@@ -10,70 +10,103 @@ public class HyspeechDialogPageData {
     public static final BuilderCodec<HyspeechDialogPageData> CODEC =
             BuilderCodec.builder(HyspeechDialogPageData.class, HyspeechDialogPageData::new)
                     .append(
-                            new KeyedCodec<>("Next", Codec.STRING),
-                            (entry, s) -> entry.doNext = "true".equalsIgnoreCase(s),
-                            entry -> Boolean.TRUE.equals(entry.doNext) ? "true" : null
+                            new KeyedCodec<>("DialogNext", Codec.STRING),
+                            (entry, s) -> entry.dialogNext = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.dialogNext) ? "true" : null
                     )
                     .add()
                     .append(
-                            new KeyedCodec<>("Entry0", Codec.STRING),
-                            (entry, s) -> entry.doEntry0 = "true".equalsIgnoreCase(s),
-                            entry -> Boolean.TRUE.equals(entry.doEntry0) ? "true" : null
+                            new KeyedCodec<>("InputNext", Codec.STRING),
+                            (entry, s) -> entry.inputNext = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.inputNext) ? "true" : null
                     )
                     .add()
                     .append(
-                            new KeyedCodec<>("Entry1", Codec.STRING),
-                            (entry, s) -> entry.doEntry1 = "true".equalsIgnoreCase(s),
-                            entry -> Boolean.TRUE.equals(entry.doEntry1) ? "true" : null
+                            new KeyedCodec<>("Choice0", Codec.STRING),
+                            (entry, s) -> entry.firstChoice = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.firstChoice) ? "true" : null
                     )
                     .add()
                     .append(
-                            new KeyedCodec<>("Entry2", Codec.STRING),
-                            (entry, s) -> entry.doEntry2 = "true".equalsIgnoreCase(s),
-                            entry -> Boolean.TRUE.equals(entry.doEntry2) ? "true" : null
+                            new KeyedCodec<>("Choice1", Codec.STRING),
+                            (entry, s) -> entry.secondChoice = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.secondChoice) ? "true" : null
                     )
                     .add()
                     .append(
-                            new KeyedCodec<>("Entry3", Codec.STRING),
-                            (entry, s) -> entry.doEntry3 = "true".equalsIgnoreCase(s),
-                            entry -> Boolean.TRUE.equals(entry.doEntry3) ? "true" : null
+                            new KeyedCodec<>("Choice2", Codec.STRING),
+                            (entry, s) -> entry.thirdChoice = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.thirdChoice) ? "true" : null
+                    )
+                    .add()
+                    .append(
+                            new KeyedCodec<>("Choice3", Codec.STRING),
+                            (entry, s) -> entry.fourthChoice = "true".equalsIgnoreCase(s),
+                            entry -> Boolean.TRUE.equals(entry.fourthChoice) ? "true" : null
+                    )
+                    .add()
+                    .append(
+                            new KeyedCodec<>("@Input", Codec.STRING),
+                            (entry, s) -> entry.input = s,
+                            entry -> entry.input
                     )
                     .add()
                     .build();
 
     @Nullable
-    private Boolean doNext;
-    @Nullable
-    private Boolean doEntry0;
-    @Nullable
-    private Boolean doEntry1;
-    @Nullable
-    private Boolean doEntry2;
-    @Nullable
-    private Boolean doEntry3;
+    private Boolean dialogNext;
 
-    public Boolean doNext() {
-        return this.doNext;
+    @Nullable
+    private Boolean inputNext;
+
+    @Nullable
+    private Boolean firstChoice;
+    @Nullable
+    private Boolean secondChoice;
+    @Nullable
+    private Boolean thirdChoice;
+    @Nullable
+    private Boolean fourthChoice;
+
+    @Nullable
+    private String input;
+
+    public String input() {
+        return this.input;
     }
-    public Boolean doEntry0() {
-        return this.doEntry0;
+
+    public Boolean dialogNext() {
+        return this.dialogNext;
     }
-    public Boolean doEntry1() {
-        return this.doEntry1;
+
+    public Boolean inputNext() {
+        return this.inputNext;
     }
-    public Boolean doEntry2() {
-        return this.doEntry2;
+
+
+
+    public Boolean firstChoice() {
+        return this.firstChoice;
     }
-    public Boolean doEntry3() {
-        return this.doEntry3;
+
+    public Boolean secondChoice() {
+        return this.secondChoice;
+    }
+
+    public Boolean thirdChoice() {
+        return this.thirdChoice;
+    }
+
+    public Boolean fourthChoice() {
+        return this.fourthChoice;
     }
 
     public Boolean getEntry(int i) {
         return switch (i) {
-            case 0 -> doEntry0();
-            case 1 -> doEntry1();
-            case 2 -> doEntry2();
-            case 3 -> doEntry3();
+            case 0 -> firstChoice();
+            case 1 -> secondChoice();
+            case 2 -> thirdChoice();
+            case 3 -> fourthChoice();
             default -> null;
         };
     }

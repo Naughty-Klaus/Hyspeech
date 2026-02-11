@@ -1,40 +1,33 @@
 package gg.ngl.hyspeech.asset.dialog;
 
-import com.hypixel.hytale.codec.codecs.EnumCodec;
+public enum HyspeechDialogType {
+    TEXT_INPUT("Pages/HyspeechTextInput.ui", 0),
+    CHOICE_2("Pages/HyspeechChoice2.ui", 2),
+    CHOICE_3("Pages/HyspeechChoice3.ui", 3),
+    CHOICE_4("Pages/HyspeechChoice4.ui", 4),
+    DIALOG_1("Pages/HyspeechDialog1.ui", 1),
+    DIALOG_2("Pages/HyspeechDialog2.ui", 2),
+    DIALOG_3("Pages/HyspeechDialog3.ui", 3),
+    DIALOG_4("Pages/HyspeechDialog4.ui", 4),
+    UNSET(null, 0);
 
-/**
- *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- */
+    public final String uiPath;
+    public final int entries;
 
-public class HyspeechDialogType {
-
-    public enum DialogType {
-        CHOICE_2,
-        CHOICE_3,
-        CHOICE_4,
-        DIALOG_1,
-        DIALOG_2,
-        DIALOG_3,
-        DIALOG_4,
-        UNSET
+    HyspeechDialogType(String uiPath, int entries) {
+        this.uiPath = uiPath;
+        this.entries = entries;
     }
 
-    public static final EnumCodec<DialogType> DIALOG_TYPE_ENUM_CODEC = new EnumCodec<>(DialogType.class);
+    public boolean isInput() {
+        return TEXT_INPUT.equals(this);
+    }
 
+    public boolean isDialog() {
+        return name().startsWith("DIALOG");
+    }
+
+    public boolean isChoice() {
+        return name().startsWith("CHOICE");
+    }
 }

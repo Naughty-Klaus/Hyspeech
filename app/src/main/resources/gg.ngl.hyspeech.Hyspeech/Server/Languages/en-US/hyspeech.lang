@@ -1,37 +1,28 @@
-dialog.Hans_Dialog01.name = Hans
-dialog.Hans_Dialog01.content.0 = Hello, {username}. What are you doing here?
+dialog.IntroDialog01.name = [{lang}] <color is="#2ead58">Hans</color>
 
-dialog.Hans_Dialog02.name = {username}
-dialog.Hans_Dialog02.content.0 = I'm looking for whoever is in charge of this place.
-dialog.Hans_Dialog02.content.1 = I have come to kill everyone in this castle!
-dialog.Hans_Dialog02.content.2 = I don't know. I'm lost. Where am I?
-dialog.Hans_Dialog02.content.3 = Can you tell me how long I've been here?
+dialog.IntroDialog02.name = <color is="#2e94ad">{username}</color>
+dialog.IntroDialog02.content.0 = Uh... Do I know you?
 
-dialog.Hans_Dialog03.name = Hans
+dialog.IntroDialog03.name = <color is="#2ead58">Hans</color>
+dialog.IntroDialog03.content.0 = Did you hit your head on a rock
+dialog.IntroDialog03.content.1 = or do you have a screw loose?!
+dialog.IntroDialog03.content.3 = It's me, your old pal Hans!
 
-dialog.Hans_Dialog03_S01.name = Hans
-dialog.Hans_Dialog03_S01.content.0 = Who, the Duke? He's in his study, on the first floor.
+dialog.IntroDialog04.name = <color is="#2e94ad">{username}</color>
+dialog.IntroDialog04.content.0 = Where am I?
+dialog.IntroDialog04.content.1 = Who are you again?
+dialog.IntroDialog04.content.2 = Goodbye
 
-dialog.Hans_Dialog03_S02.name = Hans
-dialog.Hans_Dialog03_S02.content.0 = *Runs away in terror*
-dialog.Hans_Dialog03_S02.content.1 = Help! Help!
+dialog.IntroDialog04_C01.name = <color is="#2ead58">Hans</color>
+dialog.IntroDialog04_C01.content.0 = Ah, you're in Lumbridge castle
+dialog.IntroDialog04_C01.content.1 = one of the most peaceful lands
+dialog.IntroDialog04_C01.content.2 = in all of Gielinor!
 
-dialog.Hans_Dialog03_S03.name = Hans
-dialog.Hans_Dialog03_S03.content.0 = You are in Lumbridge Castle.
-
-dialog.Hans_Dialog03_S04.name = Hans
-dialog.Hans_Dialog03_S04.content.0 = Ahh, I see all the newcomers arriving in Lumbridge,
-dialog.Hans_Dialog03_S04.content.1 = fresh-faced and eager for adventure. I remember you...
-dialog.Hans_Dialog03_S04.content.2 = You've spent 0 days, 16 hours, 37 minutes
-dialog.Hans_Dialog03_S04.content.3 = in the world since you arrived 6 days ago.
-
-dialog.Hans_Dialog04.name = {username}
-dialog.Hans_Dialog04.content.0 = I... don't know. I woke up in a stange tomb, without
-dialog.Hans_Dialog04.content.1 = any coffins or memories. There was a strange portal
-dialog.Hans_Dialog04.content.2 = before me. Surrounding it were two pillars and braziers.
-dialog.Hans_Dialog04.content.3 = I stepped through the portal, and suddenly I appeared here.
+dialog.IntroDialog04_C02.name = <color is="#2ead58">Hans</color>
+dialog.IntroDialog04_C02.content.0 = Hmm... <i>You really</i> have forgotten, haven't
+dialog.IntroDialog04_C02.content.1 = you? Well, I'm <b>Hans</b>. You and I used to be
+dialog.IntroDialog04_C02.content.2 = childhood friends before you went and
+dialog.IntroDialog04_C02.content.3 = joined the knights. I can't believe <u>you</u> forgot!
 
 interactionHints.talk = Press [{key}] to Talk
-
-
 npcRoles.Hans.name = Hans

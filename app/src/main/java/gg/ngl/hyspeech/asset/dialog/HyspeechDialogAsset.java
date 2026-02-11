@@ -1,7 +1,6 @@
 package gg.ngl.hyspeech.asset.dialog;
 
 import com.hypixel.hytale.assetstore.AssetExtraInfo;
-import com.hypixel.hytale.assetstore.AssetKeyValidator;
 import com.hypixel.hytale.assetstore.AssetRegistry;
 import com.hypixel.hytale.assetstore.AssetStore;
 import com.hypixel.hytale.assetstore.codec.AssetBuilderCodec;
@@ -9,36 +8,36 @@ import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.assetstore.map.JsonAssetWithMap;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
+import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
-import com.hypixel.hytale.codec.validation.ValidatorCache;
-
 import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
-import gg.ngl.hyspeech.asset.dialog.HyspeechDialogType.DialogType;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 /**
  *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
+ * Hyspeech - Character dialog system for Hytale
+ * Copyright (C) 2026 Naughty-Klaus
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAssetMap<String, HyspeechDialogAsset>> {
+
+    public static final EnumCodec<HyspeechDialogType> DIALOG_TYPE_ENUM_CODEC = new EnumCodec<>(HyspeechDialogType.class);
 
     public static final AssetBuilderCodec<String, HyspeechDialogAsset> CODEC =
             AssetBuilderCodec
@@ -52,7 +51,7 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
                             asset -> asset.extraData
                     )
                     .append(
-                            new KeyedCodec<>("Type", HyspeechDialogType.DIALOG_TYPE_ENUM_CODEC),
+                            new KeyedCodec<>("Type", DIALOG_TYPE_ENUM_CODEC),
                             (obj, val) -> obj.type = val,
                             obj -> obj.type
                     )
@@ -87,10 +86,9 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
                     .add()
                     .build();
 
-    public static final ValidatorCache<String> VALIDATOR_CACHE = new ValidatorCache(new AssetKeyValidator(HyspeechDialogAsset::getAssetStore));
     private static AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> ASSET_STORE;
     public AssetExtraInfo.Data extraData;
-    public DialogType type = DialogType.DIALOG_1;
+    public HyspeechDialogType type = HyspeechDialogType.DIALOG_1;
     public HyspeechMacroAsset macro;
     public String id;
     public HyspeechDialogEntry[] entries;
@@ -98,8 +96,12 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
 
     public boolean typewriterEffect = false;
 
-    public boolean isTypewriterEffectEnabled() {
-        return this.typewriterEffect;
+    public HyspeechDialogAsset(String id, HyspeechDialogEntry[] entries) {
+        this.id = id;
+        this.entries = entries;
+    }
+
+    protected HyspeechDialogAsset() {
     }
 
     public static AssetStore<String, HyspeechDialogAsset, DefaultAssetMap<String, HyspeechDialogAsset>> getAssetStore() {
@@ -113,12 +115,8 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
         return HyspeechDialogAsset.getAssetStore().getAssetMap();
     }
 
-    public HyspeechDialogAsset(String id, HyspeechDialogEntry[] entries) {
-        this.id = id;
-        this.entries = entries;
-    }
-
-    protected HyspeechDialogAsset() {
+    public boolean isTypewriterEffectEnabled() {
+        return this.typewriterEffect;
     }
 
     @Override
@@ -126,7 +124,7 @@ public class HyspeechDialogAsset implements JsonAssetWithMap<String, DefaultAsse
         return this.id;
     }
 
-    public DialogType getType() {
+    public HyspeechDialogType getType() {
         return this.type;
     }
 

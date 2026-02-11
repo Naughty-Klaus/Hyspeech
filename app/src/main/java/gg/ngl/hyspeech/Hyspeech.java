@@ -1,28 +1,32 @@
 package gg.ngl.hyspeech;
 
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import com.hypixel.hytale.server.core.plugin.PluginBase;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.Config;
 import com.hypixel.hytale.server.npc.NPCPlugin;
-import gg.ngl.hyspeech.demo.DemoClass;
-import gg.ngl.hyspeech.player.HyspeechPlayer;
-import gg.ngl.hyspeech.player.commands.HyspeechCommand;
-import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
 import gg.ngl.hyspeech.asset.dialog.HyspeechDialogAsset;
 import gg.ngl.hyspeech.asset.dialog.action.builder.BuilderActionBeginDialog;
+import gg.ngl.hyspeech.asset.dialog.event.ChoiceSelectedEvent;
+import gg.ngl.hyspeech.asset.dialog.event.DialogEventBus;
+import gg.ngl.hyspeech.asset.dialog.event.DialogEventContext;
+import gg.ngl.hyspeech.asset.dialog.event.DialogInputReceivedEvent;
+import gg.ngl.hyspeech.asset.macro.HyspeechMacroAsset;
+import gg.ngl.hyspeech.demo.DemoClass;
+import gg.ngl.hyspeech.player.HyspeechPlayer;
+import gg.ngl.hyspeech.player.HyspeechPlayerConfig;
+import gg.ngl.hyspeech.player.commands.HyspeechCommand;
 import gg.ngl.hyspeech.player.commands.HyspeechDemoCommand;
 import gg.ngl.hyspeech.util.param.ParameterContext;
 import gg.ngl.hyspeech.util.param.ParameterContextContributor;
 import gg.ngl.hyspeech.util.param.ParameterProcessor;
 import gg.ngl.hyspeech.util.param.ParameterResolver;
-import gg.ngl.hyspeech.player.HyspeechPlayerConfig;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,17 +38,17 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Hyspeech - Character dialog system for Hytale
  * Copyright (C) 2026 Naughty-Klaus
- * <p>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
@@ -52,21 +56,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Hyspeech extends JavaPlugin {
 
+    public static final Map<PlayerRef, HyspeechPlayer> hyspeechPlayerMap = new ConcurrentHashMap<>();
     private static Hyspeech INSTANCE;
     private final Map<String, ParameterProcessor<?>> processors = new ConcurrentHashMap<>();
-    public static final Map<PlayerRef, HyspeechPlayer> hyspeechPlayerMap = new ConcurrentHashMap<>();
     private final Config<HyspeechConfig> config;
 
     private final List<ParameterContextContributor> contributors = new ArrayList<>();
 
-    public void registerContextContributor(ParameterContextContributor contributor) {
-        contributors.add(contributor);
-    }
+    private final DialogEventBus dialogEvents = new DialogEventBus();
 
-    public void populateContext(ParameterContext ctx) {
-        for (ParameterContextContributor contributor : contributors) {
-            contributor.contribute(ctx);
-        }
+    public DialogEventBus dialogEvents() {
+        return dialogEvents;
     }
 
     public Hyspeech(JavaPluginInit init) {
@@ -77,6 +77,16 @@ public class Hyspeech extends JavaPlugin {
 
     public static Hyspeech get() {
         return Hyspeech.INSTANCE;
+    }
+
+    public void registerContextContributor(ParameterContextContributor contributor) {
+        contributors.add(contributor);
+    }
+
+    public void populateContext(ParameterContext ctx) {
+        for (ParameterContextContributor contributor : contributors) {
+            contributor.contribute(ctx);
+        }
     }
 
     public <C> void registerParameter(
@@ -90,18 +100,6 @@ public class Hyspeech extends JavaPlugin {
     public ParameterProcessor<?> getProcessor(String key) {
         return processors.get(key);
     }
-
-    /*public String process(String message, Object context) {
-        for (ParameterProcessor<?> processor : processors.values()) {
-            if (processor.supports(context)) {
-                message = message.replace(
-                        processor.key(),
-                        processor.resolve(context)
-                );
-            }
-        }
-        return message;
-    }*/
 
     public String process(String message, ParameterContext ctx) {
         for (ParameterProcessor<?> processor : processors.values()) {
@@ -138,6 +136,15 @@ public class Hyspeech extends JavaPlugin {
         Hyspeech.get().registerContextContributor(ctx -> {
             ctx.put(DemoClass.class, new DemoClass());
         });
+
+        Hyspeech.get().dialogEvents().register(
+                "IntroDialog01",
+                DialogInputReceivedEvent.class,
+                event -> {
+                    PlayerRef player = event.context().player();
+                    System.out.println("[" + player.getUsername() + "] " + event.input());
+                }
+        );
 
         /*
          * End of demo-code.
@@ -230,5 +237,6 @@ public class Hyspeech extends JavaPlugin {
         getConfig().save();
     }
 
-    public void disable() {}
+    public void disable() {
+    }
 }

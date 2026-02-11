@@ -9,7 +9,6 @@ import com.hypixel.hytale.server.npc.asset.builder.BuilderSupport;
 import com.hypixel.hytale.server.npc.corecomponents.ActionBase;
 import com.hypixel.hytale.server.npc.role.Role;
 import com.hypixel.hytale.server.npc.sensorinfo.InfoProvider;
-
 import gg.ngl.hyspeech.asset.dialog.action.builder.BuilderActionBeginDialog;
 import gg.ngl.hyspeech.player.ui.page.HyspeechDialogPage;
 
@@ -17,21 +16,21 @@ import javax.annotation.Nonnull;
 
 /**
  *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
+ * Hyspeech - Character dialog system for Hytale
+ * Copyright (C) 2026 Naughty-Klaus
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -50,7 +49,7 @@ public class ActionBeginDialog extends ActionBase {
 
     @Override
     public boolean execute(@Nonnull Ref<EntityStore> ref, @Nonnull Role role, InfoProvider sensorInfo, double dt, @Nonnull Store<EntityStore> store) {
-        if(canExecute(ref, role, sensorInfo, dt, store)) {
+        if (canExecute(ref, role, sensorInfo, dt, store)) {
             Ref<EntityStore> playerReference = role.getStateSupport().getInteractionIterationTarget();
             if (playerReference == null) {
                 return false;

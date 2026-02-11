@@ -249,7 +249,7 @@
               },
               {
                 "Type": "HyspeechBeginDialog",
-                "Dialog": "Hans_Dialog01"
+                "Dialog": "IntroDialog01"
               },
               {
                 "Type": "State",

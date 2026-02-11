@@ -1,3 +1,4 @@
 package gg.ngl.hyspeech.util.store;
 
-public class AssetStoreUtils {}
+public class AssetStoreUtils {
+}

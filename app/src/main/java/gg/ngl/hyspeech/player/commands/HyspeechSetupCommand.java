@@ -12,7 +12,6 @@ import gg.ngl.hyspeech.Hyspeech;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,43 +22,27 @@ import java.util.jar.JarFile;
 
 /**
  *
- *     Hyspeech - Character dialog system for Hytale
- *     Copyright (C) 2026 Naughty-Klaus
+ * Hyspeech - Character dialog system for Hytale
+ * Copyright (C) 2026 Naughty-Klaus
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 public class HyspeechSetupCommand extends AbstractPlayerCommand {
     public HyspeechSetupCommand() {
         super("setup", "Generates a writable Hyspeech demo pack.");
-    }
-
-    @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        try {
-            extractFolderFromJar(
-                Hyspeech.class,
-                "gg.ngl.hyspeech.Hyspeech/",
-                Paths.get("mods/")
-            );
-
-            commandContext.sender().sendMessage(Message.raw("Hyspeech setup has generated the demo pack. Restart server to load the pack."));
-        } catch (Exception e) {
-            commandContext.sender().sendMessage(Message.raw("An error has occurred when setting up the demo pack."));
-            throw new RuntimeException(e);
-        }
     }
 
     public static void extractFolderFromJar(
@@ -69,10 +52,10 @@ public class HyspeechSetupCommand extends AbstractPlayerCommand {
     ) throws Exception {
 
         Path jarPath = Paths.get(
-            clazz.getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .toURI()
+                clazz.getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
         );
 
         if (!Files.isDirectory(jarPath) && jarPath.toString().endsWith(".jar")) {
@@ -96,6 +79,22 @@ public class HyspeechSetupCommand extends AbstractPlayerCommand {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        try {
+            extractFolderFromJar(
+                    Hyspeech.class,
+                    "gg.ngl.hyspeech.Hyspeech/",
+                    Paths.get("mods/")
+            );
+
+            commandContext.sender().sendMessage(Message.raw("Hyspeech setup has generated the demo pack. Restart server to load the pack."));
+        } catch (Exception e) {
+            commandContext.sender().sendMessage(Message.raw("An error has occurred when setting up the demo pack."));
+            throw new RuntimeException(e);
         }
     }
 }

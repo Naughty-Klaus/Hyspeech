@@ -6,6 +6,9 @@ import com.hypixel.hytale.server.core.util.Config;
 import java.io.File;
 
 public class HyspeechPlayer {
+    private PlayerRef player;
+    private Config<HyspeechPlayerConfig> config;
+
     public HyspeechPlayer(PlayerRef player) {
         this.player = player;
 
@@ -16,7 +19,7 @@ public class HyspeechPlayer {
         );
 
         getConfig().load().thenAccept((config) -> {
-            if(config.playerUuid == null)
+            if (config.playerUuid == null)
                 config.setUuid(getPlayerRef().getUuid());
         }).exceptionally((throwable -> {
             throwable.printStackTrace();
@@ -26,15 +29,12 @@ public class HyspeechPlayer {
         config.save();
     }
 
-    protected HyspeechPlayer() {}
-
-    private PlayerRef player;
+    protected HyspeechPlayer() {
+    }
 
     public PlayerRef getPlayerRef() {
         return this.player;
     }
-
-    private Config<HyspeechPlayerConfig> config;
 
     public Config<HyspeechPlayerConfig> getConfig() {
         return config;

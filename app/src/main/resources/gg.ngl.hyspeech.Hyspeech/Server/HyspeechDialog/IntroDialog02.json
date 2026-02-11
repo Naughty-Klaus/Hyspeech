@@ -1,0 +1,9 @@
+{
+  "Entries": [
+    {
+      "Content": "hyspeech.dialog.IntroDialog02.content.0"
+    }
+  ],
+  "Type": "Dialog1",
+  "Next": "IntroDialog03"
+}

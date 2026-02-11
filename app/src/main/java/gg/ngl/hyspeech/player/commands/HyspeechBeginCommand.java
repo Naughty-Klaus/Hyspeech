@@ -35,10 +35,13 @@ import javax.annotation.Nonnull;
  */
 
 public class HyspeechBeginCommand extends AbstractPlayerCommand {
+
+    private final RequiredArg<PlayerRef> playerArg;
     private final RequiredArg<String> dialogArg;
 
     public HyspeechBeginCommand() {
         super("begin", "Command for developer use only!");
+        playerArg = withRequiredArg("player", "Username of the player who should open dialog.", ArgTypes.PLAYER_REF);
         dialogArg = withRequiredArg("dialog", "The dialog to open.", ArgTypes.STRING);
     }
 
@@ -46,13 +49,17 @@ public class HyspeechBeginCommand extends AbstractPlayerCommand {
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         String label = commandContext.get(dialogArg);
 
-        Player playerComponent = store.getComponent(ref, Player.getComponentType());
+        PlayerRef playerRef1 = playerArg.get(commandContext);
+        Ref<EntityStore> ref1 = playerRef1.getReference();
+        Store<EntityStore> store1 = ref1.getStore();
+
+        Player playerComponent = store.getComponent(ref1, Player.getComponentType());
 
         if (playerComponent == null) {
             return;
         }
 
-        playerComponent.getPageManager().openCustomPage(ref, store,
-                new HyspeechDialogPage(ref, store, playerRef, label));
+        playerComponent.getPageManager().openCustomPage(ref1, store1,
+                new HyspeechDialogPage(ref1, store1, playerRef1, label));
     }
 }

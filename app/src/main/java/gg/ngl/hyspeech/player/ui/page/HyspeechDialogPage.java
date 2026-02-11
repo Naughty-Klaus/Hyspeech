@@ -113,6 +113,10 @@ public class HyspeechDialogPage extends InteractiveCustomUIPage<HyspeechDialogPa
 
         commands.append(currentDialogType.uiPath);
 
+        if(currentDialogType.isDialog() || currentDialogType.isInput())
+            if (asset.getNext() == null)
+                commands.set("#NextButton.Text", "CLOSE");
+
         ParameterContext ctx = new ParameterContext();
         ctx.put(PlayerRef.class, playerRef);
         ctx.put(Hyspeech.class, Hyspeech.get());

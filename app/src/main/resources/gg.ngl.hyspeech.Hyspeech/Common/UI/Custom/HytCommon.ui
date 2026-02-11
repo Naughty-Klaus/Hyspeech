@@ -36,6 +36,11 @@ $Sounds = "HytSounds.ui";
 @DefaultButtonPressedBackground = PatchStyle(TexturePath: "Common/Buttons/Primary_Pressed.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
 @DefaultButtonDisabledBackground = PatchStyle(TexturePath: "Common/Buttons/Disabled.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
 
+@HyspeechCloseButtonDefaultBackground = PatchStyle(TexturePath: "Common/Buttons/Close.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
+@HyspeechCloseButtonHoveredBackground = PatchStyle(TexturePath: "Common/Buttons/Close_Hovered.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
+@HyspeechCloseButtonPressedBackground = PatchStyle(TexturePath: "Common/Buttons/Close_Pressed.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
+@HyspeechCloseButtonDisabledBackground = PatchStyle(TexturePath: "Common/Buttons/Disabled.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
+
 @ForwardButtonDefaultBackground = PatchStyle(TexturePath: "Common/Buttons/ForwardButton.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
 @ForwardButtonHoveredBackground = PatchStyle(TexturePath: "Common/Buttons/ForwardButtonHovered.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
 @ForwardButtonPressedBackground = PatchStyle(TexturePath: "Common/Buttons/ForwardButtonPressed.png", VerticalBorder: @ButtonBorder, HorizontalBorder: 80);
@@ -126,6 +131,14 @@ $Sounds = "HytSounds.ui";
   Hovered: (Background: @DefaultButtonHoveredBackground, LabelStyle: @DefaultButtonLabelStyle),
   Pressed: (Background: @DefaultButtonPressedBackground, LabelStyle: @DefaultButtonLabelStyle),
   Disabled: (Background: @DefaultButtonDisabledBackground, LabelStyle: @DefaultButtonDisabledLabelStyle),
+  Sounds: @ButtonSounds,
+);
+
+@HyspeechCloseButtonStyle = TextButtonStyle(
+  Default: (Background: @HyspeechCloseButtonDefaultBackground, LabelStyle: @DefaultButtonLabelStyle),
+  Hovered: (Background: @HyspeechCloseButtonHoveredBackground, LabelStyle: @DefaultButtonLabelStyle),
+  Pressed: (Background: @HyspeechCloseButtonPressedBackground, LabelStyle: @DefaultButtonLabelStyle),
+  Disabled: (Background: @HyspeechCloseButtonDisabledBackground, LabelStyle: @DefaultButtonDisabledLabelStyle),
   Sounds: @ButtonSounds,
 );
 

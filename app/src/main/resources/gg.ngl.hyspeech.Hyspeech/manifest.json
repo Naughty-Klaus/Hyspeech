@@ -1,7 +1,7 @@
 {
   "Group": "gg.ngl.hyspeech",
   "Name": "Hyspeech",
-  "Version": "1.0.7",
+  "Version": "1.0.0",
   "Description": "UI elements for Hyspeech",
   "Authors": [
     {
